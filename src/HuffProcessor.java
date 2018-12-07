@@ -99,24 +99,31 @@ public class HuffProcessor {
 	public void writeHeader(HuffNode root, BitOutputStream out) {
 		HuffNode current = root;
 		while(current != null) {
-			out.writeBits(1, 0);
-			if(current.myRight != null && current.myLeft != null) {
-				writeHeader(current.myRight , out);
-				writeHeader(current.myLeft, out);
-				
-			}
 			if(current.myLeft == null && current.myRight == null) {
 				out.writeBits(1, 1);
 				out.writeBits(BITS_PER_WORD + 1, current.myValue);
+			}else {
+				out.writeBits(1, 0);
+				if(current.myRight != null && current.myLeft != null) {
+					writeHeader(current.myRight , out);
+					writeHeader(current.myLeft, out);
+					
+				}
 			}
 		}
 		
 	}
 	public void writeCompressedBits(String [] codings, BitInputStream in, BitOutputStream out) {
 		int bits = in.readBits(BITS_PER_WORD);
-		for(int x = 0; x < codings.length; x ++) {
-			
+		if(bits != PSEUDO_EOF) {
+			String code = codings[bits];
+			out.writeBits(code.length(), Integer.parseInt(code,2));
+			writeCompressedBits(codings, in, out);
+		}else {
+			String code = codings[PSEUDO_EOF];
+			out.writeBits(code.length(), Integer.parseInt(code,2));
 		}
+		
 	}
 	/**
 	 * Decompresses a file. Output file must be identical bit-by-bit to the
