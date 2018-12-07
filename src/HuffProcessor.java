@@ -101,8 +101,8 @@ public class HuffProcessor {
 		while(current != null) {
 			out.writeBits(1, 0);
 			if(current.myRight != null && current.myLeft != null) {
-				writeHeader(current.myRight , out);
-				writeHeader(current.myLeft, out);
+				writeHeader(current.myLeft , out);
+				writeHeader(current.myRight, out);
 				
 			}
 			if(current.myLeft == null && current.myRight == null) {
